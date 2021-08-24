@@ -1,3 +1,4 @@
+mod cedarwood;
 mod constants;
 mod hashset;
 mod qptrie;
@@ -18,6 +19,9 @@ fn main() {
   };
 
   let candidate_keys = vec![
+    "ok-doubleclick.net",
+    "www.ok-doubleclick.net",
+    "omg.static.doubleclick.net",
     "www.doubleclick.net",
     "doubleclick.com",
     "cocoronavi.com",
@@ -64,5 +68,16 @@ fn main() {
     }
     let end = start.elapsed();
     println!("QPS: {:6}ns", end.subsec_nanos());
+  }
+
+  {
+    let cw = cedarwood::CW::new(vec_domain_str);
+    let start = std::time::Instant::now();
+    for key in candidate_keys.iter() {
+      cw.find_suffix_match(key);
+      cw.find_prefix_match(key);
+    }
+    let end = start.elapsed();
+    println!("CW: {:6}ns", end.subsec_nanos());
   }
 }
