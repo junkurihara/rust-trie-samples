@@ -22,6 +22,11 @@ fn main() {
     "doubleclick.com",
     "cocoronavi.com",
     "omg.local",
+    "ooooidufiajsdkfljomg.local",
+    "ooooidufiajsdkfljomg.cocoronavi.djfkla.dk.com",
+    "ooooidufiajsdkfljomg.cocoronavi.djfkla.omg.com",
+    "ads.ooooidufiajsdkfljomg.cocoronavi.djfkla.omg.com",
+    "ads.aaaaaaa.a.a.kdfjlasd.ooooidufiajsdkfljomg.cocoronavi.djfkla.omg.com",
   ];
 
   // HashSet
@@ -43,8 +48,21 @@ fn main() {
     let start = std::time::Instant::now();
     for key in candidate_keys.iter() {
       qp.find_suffix_match(key);
+      qp.find_prefix_match(key);
     }
     let end = start.elapsed();
     println!("QP: {:6}ns", end.subsec_nanos());
+  }
+
+  {
+    let qp = qptrie::QP::new(vec_domain_str.clone());
+
+    let start = std::time::Instant::now();
+    for key in candidate_keys.iter() {
+      qp.smart_suffix_match(key);
+      qp.smart_prefix_match(key);
+    }
+    let end = start.elapsed();
+    println!("QPS: {:6}ns", end.subsec_nanos());
   }
 }
