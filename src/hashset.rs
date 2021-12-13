@@ -17,7 +17,7 @@ impl HS {
           d
         }
       })
-      .filter(|x| re.is_match(x) || (x.split('.').collect::<Vec<&str>>().len() == 1))
+      .filter(|x| re.is_match(x) || (x.split('.').count() == 1))
       .map(|y| y.to_string())
       .collect();
     HS(hs)
@@ -36,7 +36,7 @@ impl HS {
         }
       }
     }
-    return false;
+    false
   }
 
   pub fn find_prefix_match(&self, query_domain: &str) -> bool {
@@ -55,6 +55,6 @@ impl HS {
         }
       }
     }
-    return false;
+    false
   }
 }

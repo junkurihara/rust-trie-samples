@@ -10,8 +10,8 @@ const DOMAIN_LIST_PATH: &str = "./.private/blocklist.txt";
 fn main() {
   let vec_domain_str: Vec<String> = if let Ok(content) = fs::read_to_string(DOMAIN_LIST_PATH) {
     content
-      .split("\n")
-      .filter(|c| c.len() != 0)
+      .split('\n')
+      .filter(|c| !c.is_empty())
       .map(|d| d.to_string())
       .collect()
   } else {

@@ -22,7 +22,7 @@ impl QP {
           d
         }
       })
-      .filter(|x| re.is_match(x) || (x.split('.').collect::<Vec<&str>>().len() == 1))
+      .filter(|x| re.is_match(x) || (x.split('.').count() == 1))
       .map(|y| y.to_string())
       .collect();
 
@@ -45,7 +45,7 @@ impl QP {
 
   pub fn smart_suffix_match(&self, query_domain: &str) -> bool {
     let rev_nn = reverse_string(query_domain);
-    let rev_nn_part: Vec<&str> = rev_nn.split(".").collect();
+    let rev_nn_part: Vec<&str> = rev_nn.split('.').collect();
 
     // 先にマッチする部分だけ取り出してしまう
     let lcs = self
@@ -53,7 +53,7 @@ impl QP {
       .longest_common_prefix(rev_nn.as_bytes())
       .as_str();
     let mut lcs_part: Vec<&str> = vec![];
-    for (i, s) in lcs.split(".").into_iter().enumerate() {
+    for (i, s) in lcs.split('.').into_iter().enumerate() {
       if s != rev_nn_part[i] {
         break;
       }
@@ -81,7 +81,7 @@ impl QP {
   }
 
   pub fn smart_prefix_match(&self, query_domain: &str) -> bool {
-    let nn_part: Vec<&str> = query_domain.split(".").collect();
+    let nn_part: Vec<&str> = query_domain.split('.').collect();
 
     // 先にマッチする部分だけ取り出してしまう
     let lcp = self
@@ -89,7 +89,7 @@ impl QP {
       .longest_common_prefix(query_domain.as_bytes())
       .as_str();
     let mut lcp_part: Vec<&str> = vec![];
-    for (i, p) in lcp.split(".").into_iter().enumerate() {
+    for (i, p) in lcp.split('.').into_iter().enumerate() {
       if p != nn_part[i] {
         break;
       }
@@ -117,7 +117,7 @@ impl QP {
     // 結局HashSetと同じような実装にならざるを得ない。
     // APIの問題なので、Crateを拡張すればよいが。
     let rev_nn = reverse_string(query_domain);
-    let rev_nn_part: Vec<&str> = rev_nn.split(".").collect();
+    let rev_nn_part: Vec<&str> = rev_nn.split('.').collect();
 
     let parts_num = rev_nn_part.len();
     if parts_num > 0 {
