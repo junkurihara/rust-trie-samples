@@ -15,13 +15,7 @@ impl QP {
     let re = Regex::new(&format!("{}{}{}", r"^", REGEXP_DOMAIN_OR_PREFIX, r"$")).unwrap(); // TODO: TODO:
     let vec_domain_str_cleaned: Vec<String> = vec_domain_str
       .iter()
-      .map(|d| {
-        if start_with_star.is_match(d) {
-          &d[2..]
-        } else {
-          d
-        }
-      })
+      .map(|d| if start_with_star.is_match(d) { &d[2..] } else { d })
       .filter(|x| re.is_match(x) || (x.split('.').count() == 1))
       .map(|y| y.to_string())
       .collect();
@@ -37,10 +31,7 @@ impl QP {
       }
     }
 
-    QP {
-      prefix_qp,
-      suffix_qp,
-    }
+    QP { prefix_qp, suffix_qp }
   }
 
   pub fn smart_suffix_match(&self, query_domain: &str) -> bool {
@@ -48,12 +39,9 @@ impl QP {
     let rev_nn_part: Vec<&str> = rev_nn.split('.').collect();
 
     // 先にマッチする部分だけ取り出してしまう
-    let lcs = self
-      .suffix_qp
-      .longest_common_prefix(rev_nn.as_bytes())
-      .as_str();
+    let lcs = self.suffix_qp.longest_common_prefix(rev_nn.as_bytes()).as_str();
     let mut lcs_part: Vec<&str> = vec![];
-    for (i, s) in lcs.split('.').into_iter().enumerate() {
+    for (i, s) in lcs.split('.').enumerate() {
       if s != rev_nn_part[i] {
         break;
       }
@@ -64,14 +52,8 @@ impl QP {
     if parts_num > 0 {
       for i in 0..parts_num {
         // println!("suffix or exact {}", lcs_part[0..parts_num - i].join("."));
-        if self
-          .suffix_qp
-          .contains_key_str(&lcs_part[0..parts_num - i].join("."))
-        {
-          println!(
-            "[with lcs] domain suffix or exact domain found!: {}",
-            query_domain
-          );
+        if self.suffix_qp.contains_key_str(&lcs_part[0..parts_num - i].join(".")) {
+          println!("[with lcs] domain suffix or exact domain found!: {}", query_domain);
           return true;
         }
       }
@@ -84,12 +66,9 @@ impl QP {
     let nn_part: Vec<&str> = query_domain.split('.').collect();
 
     // 先にマッチする部分だけ取り出してしまう
-    let lcp = self
-      .prefix_qp
-      .longest_common_prefix(query_domain.as_bytes())
-      .as_str();
+    let lcp = self.prefix_qp.longest_common_prefix(query_domain.as_bytes()).as_str();
     let mut lcp_part: Vec<&str> = vec![];
-    for (i, p) in lcp.split('.').into_iter().enumerate() {
+    for (i, p) in lcp.split('.').enumerate() {
       if p != nn_part[i] {
         break;
       }
@@ -126,10 +105,7 @@ impl QP {
         //   "suffix or exact {}",
         //   rev_nn_part[0..parts_num - i].join(".")
         // );
-        if self
-          .suffix_qp
-          .contains_key_str(&rev_nn_part[0..parts_num - i].join("."))
-        {
+        if self.suffix_qp.contains_key_str(&rev_nn_part[0..parts_num - i].join(".")) {
           println!("domain suffix or exact domain found!: {}", query_domain);
           return true;
         }
