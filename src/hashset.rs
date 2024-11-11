@@ -10,13 +10,7 @@ impl HS {
     let re = Regex::new(&format!("{}{}{}", r"^", REGEXP_DOMAIN_OR_PREFIX, r"$")).unwrap(); // TODO: TODO:
     let hs: HashSet<String> = vec_domain_str
       .iter()
-      .map(|d| {
-        if start_with_star.is_match(d) {
-          &d[2..]
-        } else {
-          d
-        }
-      })
+      .map(|d| if start_with_star.is_match(d) { &d[2..] } else { d })
       .filter(|x| re.is_match(x) || (x.split('.').count() == 1))
       .map(|y| y.to_string())
       .collect();
@@ -31,7 +25,7 @@ impl HS {
       for i in 0..parts_num {
         // println!("check suffix or exact {}", nn_part[i..parts_num].join("."));
         if self.0.contains(&nn_part[i..parts_num].join(".")) {
-          println!("domain suffix or exact domain found!: {}", query_domain);
+          // println!("domain suffix or exact domain found!: {}", query_domain);
           return true;
         }
       }
@@ -46,11 +40,8 @@ impl HS {
     if parts_num > 1 {
       for i in 1..parts_num {
         // println!("prefix {}.*", nn_part[0..parts_num - i].join("."));
-        if self
-          .0
-          .contains(&format!("{}.*", nn_part[0..parts_num - i].join(".")))
-        {
-          println!("domain prefix found!: {}", query_domain);
+        if self.0.contains(&format!("{}.*", nn_part[0..parts_num - i].join("."))) {
+          // println!("domain prefix found!: {}", query_domain);
           return true;
         }
       }

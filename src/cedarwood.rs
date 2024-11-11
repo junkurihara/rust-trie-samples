@@ -14,18 +14,13 @@ impl CW {
   pub fn new(vec_domain_str: Vec<String>) -> Self {
     let start_with_star = Regex::new(r"^\*\..+").unwrap();
     let end_with_star = Regex::new(r".+\.\*$").unwrap();
-    let re = Regex::new(&format!("{}{}{}", r"^", REGEXP_DOMAIN_OR_PREFIX, r"$")).unwrap(); // TODO: TODO:
+    // TODO: currently either one of prefix or suffix match with '*' is supported
+    let re = Regex::new(&format!("{}{}{}", r"^", REGEXP_DOMAIN_OR_PREFIX, r"$")).unwrap();
     let dict: Vec<String> = vec_domain_str
       .iter()
-      .map(|d| {
-        if start_with_star.is_match(d) {
-          &d[2..]
-        } else {
-          d
-        }
-      })
+      .map(|d| if start_with_star.is_match(d) { &d[2..] } else { d })
       .filter(|x| re.is_match(x) || (x.split('.').count() == 1))
-      .map(|y| y.to_string())
+      .map(|y| y.to_ascii_lowercase())
       .collect();
     let prefix_dict: Vec<String> = dict
       .iter()
@@ -38,14 +33,18 @@ impl CW {
       .map(|d| reverse_string(d))
       .collect();
 
-    let prefix_kv: Vec<(&str, i32)> = prefix_dict.iter().map(AsRef::as_ref)
+    let prefix_kv: Vec<(&str, i32)> = prefix_dict
+      .iter()
+      .map(AsRef::as_ref)
       .enumerate()
       .map(|(k, s)| (s, k as i32))
       .collect();
     let mut prefix_cedar = Cedar::new();
     prefix_cedar.build(&prefix_kv);
 
-    let suffix_kv: Vec<(&str, i32)> = suffix_dict.iter().map(AsRef::as_ref)
+    let suffix_kv: Vec<(&str, i32)> = suffix_dict
+      .iter()
+      .map(AsRef::as_ref)
       .enumerate()
       .map(|(k, s)| (s, k as i32))
       .collect();
@@ -76,15 +75,13 @@ impl CW {
         false
       }
     });
-    if let Some(d) = matched_as_domain.next() {
-      println!(
-        "[with cw] domain suffix or exact domain found!: {} ({})",
-        query_domain, d
-      );
-      true
-    } else {
-      false
-    }
+    matched_as_domain.next().is_some()
+    // if let Some(d) = matched_as_domain.next() {
+    //   // println!("[with cw] domain suffix or exact domain found!: {} ({})", query_domain, d);
+    //   true
+    // } else {
+    //   false
+    // }
   }
 
   pub fn find_prefix_match(&self, query_domain: &str) -> bool {
@@ -100,11 +97,12 @@ impl CW {
         false
       }
     });
-    if let Some(d) = matched_as_domain.next() {
-      println!("[with cw] domain prefix found!: {} ({})", query_domain, d);
-      true
-    } else {
-      false
-    }
+    matched_as_domain.next().is_some()
+    // if let Some(d) = matched_as_domain.next() {
+    //   // println!("[with cw] domain prefix found!: {} ({})", query_domain, d);
+    //   true
+    // } else {
+    //   false
+    // }
   }
 }

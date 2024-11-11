@@ -53,7 +53,7 @@ impl QP {
       for i in 0..parts_num {
         // println!("suffix or exact {}", lcs_part[0..parts_num - i].join("."));
         if self.suffix_qp.contains_key_str(&lcs_part[0..parts_num - i].join(".")) {
-          println!("[with lcs] domain suffix or exact domain found!: {}", query_domain);
+          // println!("[with lcs] domain suffix or exact domain found!: {}", query_domain);
           return true;
         }
       }
@@ -82,7 +82,7 @@ impl QP {
           .prefix_qp
           .contains_key_str(&format!("{}.*", lcp_part[0..parts_num - i].join(".")))
         {
-          println!("[with lcs] domain prefix found!: {}", query_domain);
+          // println!("[with lcs] domain prefix found!: {}", query_domain);
           return true;
         }
       }
@@ -106,7 +106,7 @@ impl QP {
         //   rev_nn_part[0..parts_num - i].join(".")
         // );
         if self.suffix_qp.contains_key_str(&rev_nn_part[0..parts_num - i].join(".")) {
-          println!("domain suffix or exact domain found!: {}", query_domain);
+          // println!("domain suffix or exact domain found!: {}", query_domain);
           return true;
         }
       }
@@ -125,7 +125,7 @@ impl QP {
           .prefix_qp
           .contains_key_str(&format!("{}.*", nn_part[0..parts_num - i].join(".")))
         {
-          println!("domain prefix found!: {}", query_domain);
+          // println!("domain prefix found!: {}", query_domain);
           return true;
         }
       }
