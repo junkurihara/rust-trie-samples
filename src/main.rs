@@ -107,7 +107,42 @@ async fn main() {
   }
 
   {
-    let size = 128usize;
+    // Instantiating the cedarwood takes time so we use the clone of the base instance
+    let cw_base = RwLock::new(Arc::new(cedarwood::CW::new(vec_domain_str.clone())));
+
+    let cnt = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let mut handle_vec: Vec<tokio::task::JoinHandle<()>> = Vec::new();
+
+    let start = std::time::Instant::now();
+    for key in candidate_keys.iter() {
+      let cw = cw_base.read().unwrap().clone();
+      let key = key.clone();
+      let cnt_clone = cnt.clone();
+      let handle = tokio::spawn(async move {
+        if cw.find_suffix_match(&key) {
+          cnt_clone.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+          return;
+        };
+        if cw.find_prefix_match(&key) {
+          cnt_clone.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+        };
+      });
+      handle_vec.push(handle);
+    }
+
+    // wait for all tasks to finish
+    let _ = futures::future::join_all(handle_vec).await;
+
+    let end = start.elapsed();
+    println!("CW Spawn Thread: {:6}ms", end.subsec_micros());
+    println!(
+      "CW Spawn Thread: blocked {:6} domains",
+      cnt.load(std::sync::atomic::Ordering::Relaxed)
+    );
+  }
+
+  {
+    let size = 512usize;
     // Instantiating the cedarwood takes time so we use the clone of the base instance
     let cw_base = cedarwood::CW::new(vec_domain_str.clone());
     let nested_list: Vec<Arc<RwLock<cedarwood::CW>>> = (0..size)
@@ -144,9 +179,9 @@ async fn main() {
     let _ = futures::future::join_all(handle_vec).await;
 
     let end = start.elapsed();
-    println!("CW Spawn Thread: {:6}ms", end.subsec_micros());
+    println!("CW Spawn Thread {size}: {:6}ms", end.subsec_micros());
     println!(
-      "CW Spawn Thread: blocked {:6} domains",
+      "CW Spawn Thread {size}: blocked {:6} domains",
       cnt.load(std::sync::atomic::Ordering::Relaxed)
     );
   }
