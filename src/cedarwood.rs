@@ -3,6 +3,7 @@ use crate::utils::*;
 use cedarwood::Cedar;
 use regex::Regex;
 
+#[derive(Clone)]
 pub struct CW {
   prefix_cedar: Cedar,
   suffix_cedar: Cedar,
@@ -76,12 +77,6 @@ impl CW {
       }
     });
     matched_as_domain.next().is_some()
-    // if let Some(d) = matched_as_domain.next() {
-    //   // println!("[with cw] domain suffix or exact domain found!: {} ({})", query_domain, d);
-    //   true
-    // } else {
-    //   false
-    // }
   }
 
   pub fn find_prefix_match(&self, query_domain: &str) -> bool {
@@ -98,11 +93,34 @@ impl CW {
       }
     });
     matched_as_domain.next().is_some()
-    // if let Some(d) = matched_as_domain.next() {
-    //   // println!("[with cw] domain prefix found!: {} ({})", query_domain, d);
-    //   true
-    // } else {
-    //   false
-    // }
   }
+
+  // pub fn in_blocklist(&self, query_name: &str) -> anyhow::Result<bool> {
+  //   // remove final dot
+  //   let mut nn = query_name.to_ascii_lowercase();
+  //   match nn.pop() {
+  //     Some(dot) => {
+  //       if dot != '.' {
+  //         bail!("Invalid query name as fqdn (missing final dot): {}", nn);
+  //       }
+  //     }
+  //     None => {
+  //       bail!("Missing query name");
+  //     }
+  //   }
+
+  //   if self.find_suffix_match(&nn) {
+  //     debug!("[with cw] suffix/exact match found: {}", nn);
+  //     return Ok(true);
+  //   }
+
+  //   if self.find_prefix_match(&nn) {
+  //     debug!("[with cw] prefix match found: {}", nn);
+  //     return Ok(true);
+  //   }
+
+  //   // TODO: other matching patterns
+
+  //   Ok(false)
+  // }
 }

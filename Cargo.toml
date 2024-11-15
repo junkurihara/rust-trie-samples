@@ -10,3 +10,7 @@ cedarwood = "0.4.6"
 qp-trie = "0.8.2"
 regex = "1.11.1"
 rustc-hash = "2.0.0"
+tracing = "0.1.40"
+anyhow = "1.0.93"
+tokio = { version = "1.41.1", features = ["full"] }
+futures = { version = "0.3.31" }
