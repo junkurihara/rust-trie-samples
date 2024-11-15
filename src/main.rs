@@ -142,7 +142,7 @@ async fn main() {
   }
 
   {
-    let size = 512usize;
+    let size = 128usize;
     // Instantiating the cedarwood takes time so we use the clone of the base instance
     let cw_base = cedarwood::CW::new(vec_domain_str.clone());
     let nested_list: Vec<Arc<RwLock<cedarwood::CW>>> = (0..size)
